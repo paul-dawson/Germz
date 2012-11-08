@@ -46,7 +46,9 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Camera\TPCamera.cs" />
      <Compile Include="Assets\Scripts\Engine\PatrolPath.cs" />
+     <Compile Include="Assets\Scripts\Engine\Trigger.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\Logic\PlayerSpawnTrigger.cs" />
      <Compile Include="Assets\Scripts\Player\Player.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
