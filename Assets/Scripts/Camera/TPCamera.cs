@@ -32,19 +32,17 @@ public class TPCamera : MonoBehaviour {
 
     void LateUpdate()
     {
-        if (!Target)
+        if (!Player.getPlayerGameObject())
             return;
 
-        m_desiredRotation = m_targetTransform.eulerAngles.y;
-        m_desiredHeight = m_targetTransform.position.y + HeightAboveTarget;
+        m_desiredRotation = Player.getPlayerGameObject().transform.eulerAngles.y;
+        m_desiredHeight = Player.getPlayerGameObject().transform.position.y + HeightAboveTarget;
 
         m_currentRotation = Mathf.LerpAngle(m_currentRotation, m_desiredRotation, RotationSpeed * Time.deltaTime);
         m_currentHeight = Mathf.Lerp(m_currentHeight, m_desiredHeight, MovementSpeed * Time.deltaTime);
 
-        m_cameraTransform.position = m_targetTransform.position;
-        m_cameraTransform.position -= Quaternion.Euler(0, m_currentRotation, 0) * Vector3.forward * DistanceFromTarget;
+        m_cameraTransform.position = Player.getPlayerGameObject().transform.position;
+        m_cameraTransform.position -= Vector3.forward * DistanceFromTarget;
         m_cameraTransform.position = new Vector3(m_cameraTransform.position.x, m_currentHeight, m_cameraTransform.position.z);
-
-        //m_cameraTransform.LookAt(m_targetTransform);
     }
 }

@@ -70,7 +70,11 @@ public class PatrolPath : MonoBehaviour
     // The desired direction that the GO should face
     private Vector3 m_faceDirection = Vector3.zero;
 
+    // Timing variable
     private float m_startTime = 0.0f;
+
+    // Stores the position when disabled so when it is reenabled it can return to its previous position
+    private Vector3 m_disabledPosition = Vector3.zero;
 
     //
     // Member Functions
@@ -160,7 +164,7 @@ public class PatrolPath : MonoBehaviour
             MoveTowards(Waypoints[m_currentWaypoint], Waypoints[m_targetWaypoint]);
 
         if (CurrentState == PatrolState.PATROL_ROTATING)
-            RotateTowards(Waypoints[m_targetWaypoint]);
+            ChangeDirection(Waypoints[m_targetWaypoint]);
     }
 
     /* Performs a simple sanity check to ensure we don't get any nasty errors */
@@ -185,12 +189,13 @@ public class PatrolPath : MonoBehaviour
         transform.position = Vector3.Lerp(current + waypointBias, target, (Time.time - m_startTime) * PatrolSpeed);
     }
 
-    /* Rotates the GO towards the designated waypoint */
+    /* Rotates the GO towards the designated waypoint
     private void RotateTowards(Vector3 target)
     {
         m_faceDirection = target - transform.position;
 
         Quaternion targetRotation = Quaternion.LookRotation(m_faceDirection);
+
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, (Time.time - m_startTime) * PatrolRotationSpeed);
 
         if (transform.rotation == targetRotation)
@@ -198,6 +203,21 @@ public class PatrolPath : MonoBehaviour
             CurrentState = PatrolState.PATROL_WALKING;
             m_startTime = Time.time;
         }
+    }*/
+
+    bool ChangeDirection(Vector3 target)
+    {
+        Vector3 faceDirection = target - transform.position;
+
+        Quaternion targetRotation = Quaternion.LookRotation(faceDirection);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * 3);
+
+        if (Quaternion.Angle(transform.rotation, targetRotation) < 0.01f)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /* Adds a Sphere GameObject on the set waypoints and draws a line between them to show the path that the GameObject should take */
@@ -216,6 +236,26 @@ public class PatrolPath : MonoBehaviour
 
             currentWaypoint++;
         }
+    }
+
+    /* Disables Patrol Pathing and stores the position where disabled from */
+    public void Disable()
+    {
+        Active = false;
+        m_disabledPosition = this.gameObject.transform.position;
+    }
+
+    /* Reactivates the PatrolPath after Disable() */
+    public void Enable()
+    {
+        this.gameObject.transform.position = m_disabledPosition;
+        Active = true;
+    }
+
+    /* Returns the position that the PatrolPath was disabled at */
+    public Vector3 GetDisabledPosition()
+    {
+        return m_disabledPosition;
     }
 
     void OnDrawGizmosSelected()
